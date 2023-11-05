@@ -52,7 +52,7 @@ func (u User) Save(userInput entity.User) (entity.User, error) {
 			return
 		}
 	}()
-	userInput.PassWord = u.Hash(userInput.PassWord)
+	userInput.Password = u.Hash(userInput.Password)
 	userOut := userInput
 	data, mErr := json.Marshal(userOut)
 	if mErr != nil {

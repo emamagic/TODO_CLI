@@ -38,7 +38,7 @@ func (u User) AuthUser() (entity.User, error) {
 func (u *User) LoginUser(us entity.User) error {
 	isFound := false
 	for _, user := range u.Users {
-		if user.UserName == us.UserName && user.PassWord == u.userStorage.Hash(us.PassWord) {
+		if user.Username == us.Username && user.Password == u.userStorage.Hash(us.Password) {
 			isFound = true
 			u.setAuthUser(user)
 

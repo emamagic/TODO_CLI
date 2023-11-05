@@ -183,7 +183,7 @@ func AuthUsername() {
 	if err != nil {
 		f.Printf("error: %v", err)
 	}
-	f.Println(authUser.UserName, authUser.PassWord)
+	f.Println(authUser.Username, authUser.Password)
 }
 
 func getNewCommand(command *string) {

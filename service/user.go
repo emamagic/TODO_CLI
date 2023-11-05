@@ -33,8 +33,8 @@ type RegisterUserResponse struct {
 
 func (u User) Register(req RegisterUserRequest) (RegisterUserResponse, error) {
 	user, error := u.UserRepository.RegisterUser(entity.User{
-		UserName: req.Username,
-		PassWord: req.Password,
+		Username: req.Username,
+		Password: req.Password,
 	})
 	if error != nil {
 		return RegisterUserResponse{}, fmt.Errorf("can not create user: %v", error)
@@ -49,7 +49,7 @@ type LoginUserRequest struct {
 
 func (u User) Login(req LoginUserRequest) error {
 	return u.UserRepository.LoginUser(entity.User{
-		UserName: req.Username,
-		PassWord: req.Password,
+		Username: req.Username,
+		Password: req.Password,
 	})
 }
