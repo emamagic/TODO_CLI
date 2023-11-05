@@ -6,7 +6,7 @@ import (
 )
 
 type TaskRepository interface {
-	CreateNewTask(t entity.Task) (entity.Task, error)
+	CreateTask(t entity.Task) (entity.Task, error)
 	ListUserTask(userID int) ([]entity.Task, error)
 }
 
@@ -37,7 +37,7 @@ type CreateTaskResponse struct {
 
 func (t Task) Create(req CreateTaskRequest) (CreateTaskResponse, error) {
 
-	authenticatedUser, uErr := t.userRepository.GetUser()
+	authenticatedUser, uErr := t.userRepository.AuthUser()
 	if uErr != nil {
 		return CreateTaskResponse{}, fmt.Errorf("can not create new task: %v", uErr)
 	}
@@ -46,7 +46,7 @@ func (t Task) Create(req CreateTaskRequest) (CreateTaskResponse, error) {
 		return CreateTaskResponse{}, fmt.Errorf("user does not have this category: %d", req.CategoryID)
 	}
 
-	createdTask, cErr := t.taskRepository.CreateNewTask(entity.Task{
+	createdTask, cErr := t.taskRepository.CreateTask(entity.Task{
 		Title:      req.Title,
 		DueDate:    req.DueDate,
 		IsDone:     false,
@@ -66,7 +66,7 @@ type ListResponse struct {
 
 func (t Task) List() (ListResponse, error) {
 
-	authenticatedUser, uErr := t.userRepository.GetUser()
+	authenticatedUser, uErr := t.userRepository.AuthUser()
 	if uErr != nil {
 		return ListResponse{}, fmt.Errorf("can not list tasks: %v", uErr)
 	}

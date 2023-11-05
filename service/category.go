@@ -7,7 +7,7 @@ import (
 
 type CategoryRepository interface {
 	DoesThisUserHaveThisCategoryID(userID, categoryID int) bool
-	CreateNewCategory(cat entity.Category) entity.Category
+	CreateCategory(cat entity.Category) entity.Category
 }
 
 type Category struct {
@@ -34,12 +34,12 @@ type CreateCategoryRequest struct {
 
 func (cat Category) Create(req CreateCategoryRequest) (CreateCategoryResponse, error) {
 
-	authenticatedUser, uErr := cat.userRepository.GetUser()
+	authenticatedUser, uErr := cat.userRepository.AuthUser()
 	if uErr != nil {
 		return CreateCategoryResponse{}, fmt.Errorf("can not create new category: %v", uErr)
 	}
 
-	category := cat.categoryRepository.CreateNewCategory(entity.Category{
+	category := cat.categoryRepository.CreateCategory(entity.Category{
 		Title:  req.Title,
 		Color:  req.Color,
 		UserID: authenticatedUser.ID,

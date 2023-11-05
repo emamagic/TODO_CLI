@@ -1,4 +1,4 @@
-package memorystore
+package repository
 
 import "todo/entity"
 
@@ -6,7 +6,7 @@ type Category struct {
 	categories []entity.Category
 }
 
-func NewCategoryStore() *Category {
+func NewCategoryRepo() *Category {
 	return &Category{
 		categories: make([]entity.Category, 0),
 	}
@@ -25,7 +25,7 @@ func (cat Category) DoesThisUserHaveThisCategoryID(userID, categoryID int) bool 
 	return isFound
 }
 
-func (c *Category) CreateNewCategory(cat entity.Category) entity.Category {
+func (c *Category) CreateCategory(cat entity.Category) entity.Category {
 	cat.ID = len(c.categories) + 1
 	c.categories = append(c.categories, cat)
 	return cat

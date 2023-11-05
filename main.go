@@ -6,9 +6,9 @@ import (
 	f "fmt"
 	"os"
 	"strconv"
-	"todo/repository/filestore"
-	"todo/repository/memorystore"
+	"todo/repository"
 	"todo/service"
+	"todo/storage"
 )
 
 const (
@@ -17,6 +17,7 @@ const (
 	CREATE_CATEGORY = "create-category"
 	LIST_TASK       = "list-task"
 	LOGIN           = "login"
+	ME              = "me"
 	EXIT            = "exit"
 
 	USER_PATH = "user.txt"
@@ -30,14 +31,14 @@ var (
 )
 
 func init() {
-	taskMemoryRepo := memorystore.NewTaskStore()
-	categoryMemoryRepo := memorystore.NewCategoryStore()
-	userFileRepo := filestore.NewUserStore(USER_PATH)
+	taskRepo := repository.NewTaskRepo()
+	categoryRepo := repository.NewCategoryRepo()
+	userStore := storage.New(USER_PATH)
+	userRepo := repository.NewUserRepo(userStore)
 
-	taskService = service.NewTaksService(taskMemoryRepo, categoryMemoryRepo, userFileRepo)
-	categoryService = service.NewCategoryService(categoryMemoryRepo, userFileRepo)
-	userService = service.NewUserService(userFileRepo)
-
+	taskService = service.NewTaksService(taskRepo, categoryRepo, userRepo)
+	categoryService = service.NewCategoryService(categoryRepo, userRepo)
+	userService = service.NewUserService(userRepo)
 }
 
 func main() {
@@ -68,6 +69,8 @@ func run(command string) {
 		ListTask()
 	case LOGIN:
 		Login()
+	case ME:
+		AuthUsername()
 	case EXIT:
 		os.Exit(0)
 	}
@@ -80,7 +83,7 @@ func CreateTask() {
 	scanner.Scan()
 	title = scanner.Text()
 
-	f.Println("Please enter a duDate")
+	f.Println("Please enter a dueDate")
 	scanner.Scan()
 	dueDate = scanner.Text()
 
@@ -144,7 +147,7 @@ func RegisterUser() {
 	scanner.Scan()
 	password = scanner.Text()
 
-	_, err := userService.Create(service.CreateUserRequest{
+	_, err := userService.Register(service.RegisterUserRequest{
 		Username: username,
 		Password: password,
 	})
@@ -173,6 +176,14 @@ func Login() {
 	if err != nil {
 		f.Printf("error: %v\n", err)
 	}
+}
+
+func AuthUsername() {
+	authUser, err := userService.UserRepository.AuthUser()
+	if err != nil {
+		f.Printf("error: %v", err)
+	}
+	f.Println(authUser.UserName, authUser.PassWord)
 }
 
 func getNewCommand(command *string) {

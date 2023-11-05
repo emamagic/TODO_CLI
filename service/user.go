@@ -6,9 +6,9 @@ import (
 )
 
 type UserRepository interface {
-	GetUser() (entity.User, error)
-	CreateNewUser(user entity.User) (entity.User, error)
-	Login(user entity.User) error
+	AuthUser() (entity.User, error)
+	RegisterUser(user entity.User) (entity.User, error)
+	LoginUser(user entity.User) error
 }
 
 type User struct {
@@ -21,25 +21,25 @@ func NewUserService(userRepo UserRepository) User {
 	}
 }
 
-type CreateUserRequest struct {
+type RegisterUserRequest struct {
 	Username string
 	Password string
 }
 
-type CreateUserResponse struct {
+type RegisterUserResponse struct {
 	User     entity.User
 	Metadata string
 }
 
-func (u User) Create(req CreateUserRequest) (CreateUserResponse, error) {
-	user, error := u.UserRepository.CreateNewUser(entity.User{
+func (u User) Register(req RegisterUserRequest) (RegisterUserResponse, error) {
+	user, error := u.UserRepository.RegisterUser(entity.User{
 		UserName: req.Username,
 		PassWord: req.Password,
 	})
 	if error != nil {
-		return CreateUserResponse{}, fmt.Errorf("can not create user: %v", error)
+		return RegisterUserResponse{}, fmt.Errorf("can not create user: %v", error)
 	}
-	return CreateUserResponse{User: user}, nil
+	return RegisterUserResponse{User: user}, nil
 }
 
 type LoginUserRequest struct {
@@ -48,7 +48,7 @@ type LoginUserRequest struct {
 }
 
 func (u User) Login(req LoginUserRequest) error {
-	return u.UserRepository.Login(entity.User{
+	return u.UserRepository.LoginUser(entity.User{
 		UserName: req.Username,
 		PassWord: req.Password,
 	})
